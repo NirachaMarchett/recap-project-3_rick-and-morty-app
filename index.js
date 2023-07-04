@@ -1,3 +1,5 @@
+import { createCharacterCard } from "./components/card/card.js";
+
 const cardContainer = document.querySelector('[data-js="card-container"]');
 const searchBarContainer = document.querySelector(
   '[data-js="search-bar-container"]'
@@ -9,10 +11,81 @@ const nextButton = document.querySelector('[data-js="button-next"]');
 const pagination = document.querySelector('[data-js="pagination"]');
 
 // States
-const maxPage = 1;
-const page = 1;
-const searchQuery = "";
+let maxPage = 42;
+let page = 1;
+let searchQuery = "";
 
-//test test
-// test 2
-//test the third time
+// fetch the data
+
+export async function fetchCharacters() {
+  const response = await fetch(
+    `https://rickandmortyapi.com/api/character/?page=${page}&name=${searchQuery}`
+  );
+  const JSON = await response.json();
+  const data = await JSON.results;
+  return data;
+}
+
+export async function fetchInfo() {
+  const response = await fetch(
+    `https://rickandmortyapi.com/api/character/?page=${page}&name=${searchQuery}`
+  );
+  const JSON = await response.json();
+  const data = await JSON.info.pages;
+  return data;
+}
+
+// Render card
+render(`https://rickandmortyapi.com/api/character/?page=${page}`);
+
+pagination.textContent = `${page}/${maxPage}`;
+
+//Pagination
+
+async function render() {
+  try {
+    cardContainer.innerHTML = "";
+    maxPage = await fetchInfo();
+    const allCharacters = await fetchCharacters();
+    allCharacters.forEach((character) => {
+      createCharacterCard(character);
+    });
+    pagination.textContent = `${page}/${maxPage}`;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+}
+
+function increasePageCount() {
+  if (page >= 1 && page < maxPage) {
+    page++;
+    render();
+  }
+}
+
+function decreasePageCount() {
+  if (page > 1 && page <= maxPage) {
+    page--;
+    render();
+  }
+}
+
+nextButton.addEventListener("click", () => {
+  increasePageCount();
+});
+
+prevButton.addEventListener("click", () => {
+  decreasePageCount();
+});
+
+// Search Bar
+
+searchBar.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const data = Object.fromEntries(new FormData(event.target));
+  searchQuery = data.query;
+  page = 1;
+  render();
+  searchBar.reset();
+  searchBar.query.focus();
+});

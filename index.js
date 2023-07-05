@@ -45,8 +45,8 @@ pagination.textContent = `${page}/${maxPage}`;
 async function render() {
   try {
     cardContainer.innerHTML = "";
-    maxPage = await fetchInfo();
-    const allCharacters = await fetchCharacters();
+    maxPage = await fetchInfo(); // data.info.pages
+    const allCharacters = await fetchCharacters(); //data.results
     allCharacters.forEach((character) => {
       createCharacterCard(character);
     });

@@ -26,6 +26,7 @@ export async function fetchCharacters() {
   return data;
 }
 
+// this can be removed as we fetch all data with fetchCharacters
 export async function fetchInfo() {
   const response = await fetch(
     `https://rickandmortyapi.com/api/character/?page=${page}&name=${searchQuery}`
@@ -36,7 +37,7 @@ export async function fetchInfo() {
 }
 
 // Render card
-render(`https://rickandmortyapi.com/api/character/?page=${page}`);
+render();
 
 pagination.textContent = `${page}/${maxPage}`;
 
@@ -45,7 +46,9 @@ pagination.textContent = `${page}/${maxPage}`;
 async function render() {
   try {
     cardContainer.innerHTML = "";
-    maxPage = await fetchInfo(); // data.info.pages
+    //After removed fetchInfo function and return JSON (line 26), remove line 25
+    //const data = await fetchCharacters();
+    maxPage = await fetchInfo(); // replace with data.info.pages
     const allCharacters = await fetchCharacters(); //data.results
     allCharacters.forEach((character) => {
       createCharacterCard(character);
@@ -87,5 +90,5 @@ searchBar.addEventListener("submit", (event) => {
   page = 1;
   render();
   searchBar.reset();
-  searchBar.query.focus();
+  //searchBar.query.focus();
 });
